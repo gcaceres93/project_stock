@@ -43,7 +43,7 @@ class SaleOrder(models.Model):
                     default_location_src_id = picking_type_obj.search([('code','=','incoming'),('warehouse_id','=',rec.warehouse_id.id)])[0].default_location_dest_id
                     default_location_dest_id = default_location_src_id.copy(default={'name': _('Reserve ') + str(rec.partner_id.name)+ ' ' +str(rec.name)}) #RESERVE LOCATION CREATION
                     partner_location_id = default_location_src_id.copy(default={'name' : _('Project ') + str(rec.partner_id.name)+' ' + str(rec.name)}) #LOCATION FOR  CUSTOMER PROJECT
-                    partner_consume_location_id = default_location_src_id.copy(default={'name' : _('Consume ') + str(rec.partner_id.name) + ' ' + str(rec.name)}) #LOCATION FOR CUSTOMER PROJECT CONSUME
+                    partner_consume_location_id = default_location_src_id.copy(default={'name' : _('Consume ') + str(rec.partner_id.name) + ' ' + str(rec.name),'usage' : 'customer'}) #LOCATION FOR CUSTOMER PROJECT CONSUME
                     project_id.location_src_id = partner_location_id
                     project_id.location_dest_id = partner_consume_location_id
 
@@ -65,19 +65,8 @@ class SaleOrder(models.Model):
                         'default_location_dest_id': partner_location_id.id
                     }
 
-
-                    data3 = {  # DATA FOR CREATION OF PICKING TYPE FOR PROJECT CONSUME
-                        'name': _('Project Consume ') + str(rec.partner_id.name) + ' ' + str(rec.name),
-                        'code': 'internal',
-                        'show_reserved': True,
-                        'sequence_id': sequence_id.id,
-                        'default_location_src_id': partner_location_id.id,
-                        'default_location_dest_id': partner_consume_location_id.id
-                    }
-
                     picking_type_reserve_id = picking_type_obj.create(data1)
                     picking_type_project_id = picking_type_obj.create(data2)
-                    picking_type_project_consume_id = picking_type_obj.create(data3)
 
                     sale_picking_id = stock_picking_obj.search([('sale_id','=',rec.id)]) #search and update the sale picking
                     picking_id= None

@@ -76,12 +76,14 @@ class Task(models.Model):
         comodel_name='stock.location',
         string='Source Location',
         index=True,
+        related='project_id.location_src_id',
         help='Default location from which materials are consumed.',
     )
     location_dest_id = fields.Many2one(
         comodel_name='stock.location',
         string='Destination Location',
         index=True,
+        related='project_id.location_dest_id',
         help='Default location to which materials are consumed.',
     )
 
