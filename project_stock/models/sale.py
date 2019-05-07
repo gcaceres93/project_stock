@@ -81,6 +81,14 @@ class SaleOrder(models.Model):
                         picking_id.picking_type_id = picking_type_reserve_id.id
                         picking_id.location_dest_id = default_location_dest_id.id
                         picking_id.action_assign()
+                        stock_move_line_ids = self.env['stock.move.line'].search([('picking_id','=',picking_id.id)])
+                        stock_move_ids = self.env['stock.move'].search([('picking_id','=',picking_id.id)])
+                        if len(stock_move_ids) > 0:
+                            for sm in stock_move_ids:
+                                sm.location_dest_id = default_location_dest_id
+                        if len(stock_move_line_ids) > 0 :
+                            for stml in stock_move_line_ids:
+                                stml.location_dest_id = default_location_dest_id
                         picking_id.name = sequence_id._next()
                         if project_id:
                             picking_id.project_id = project_id
