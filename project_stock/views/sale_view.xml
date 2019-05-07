@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--Herencia res.partner con RUC-->
+        <record id="sale_order_form_project_stock" model="ir.ui.view">
+            <field name="name">view.sale.form.project_stock</field>
+            <field name="model">sale.order</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="project"/>
+            </xpath>
+            <xpath expr="//form/sheet/group/group[2]" position="after">
+                <group attrs="{'invisible':[('project', '=', False)]}" string="Project Information">
+                    <field name="project_type"/>
+                    <field name="project_stock"/>
+                    <field name="project_id" attrs="{'invisible' : [('project_type','=','new')]}"/>
+                    <field name="project_task_create"/>
+                </group>
+		    </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

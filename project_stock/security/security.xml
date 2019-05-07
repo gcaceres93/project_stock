@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="0">
+
+    <record id="group_project_stock_user" model="res.groups">
+        <field name="name">Project Stock User</field>
+    </record>
+    <record id="group_project_stock_manager" model="res.groups">
+        <field name="name">Project Stock Manager</field>
+    </record>
+
+</data>
+</odoo>
