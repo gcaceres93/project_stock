@@ -37,6 +37,7 @@
             <field name="stage_id" position="before">
                 <button name="action_assign" type="object"
                         string="Check Availability"
+                         attrs="{'invisible':[('stock_state','!=','confirmed')]}"
                         class="oe_highlight"/>
                 <button name="action_done" type="object" string="Transfer Materials"
                         attrs="{'invisible':[('stock_state','!=','assigned')]}"

@@ -80,6 +80,7 @@ class SaleOrder(models.Model):
                         picking_id.picking_type_id.sequence_id.number_next_actual =  picking_id.picking_type_id.sequence_id.number_next_actual - 1
                         picking_id.picking_type_id = picking_type_reserve_id.id
                         picking_id.location_dest_id = default_location_dest_id.id
+                        picking_id.action_assign()
                         picking_id.name = sequence_id._next()
                         if project_id:
                             picking_id.project_id = project_id
