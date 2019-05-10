@@ -12,7 +12,7 @@ class SaleOrder(models.Model):
     project_type = fields.Selection([('new','Generate new project'),('add','Add to already created project')],default="new")
     project_id = fields.Many2one('project.project','Project')
     project_stock = fields.Boolean(string="Stock Integration",help="Mark if this sale order have integration with stock pickings and a relation with the execution of task material consume",default=True)
-    project_task_create = fields.Boolean(string="Create task", help="Mari if this sale order needs to create a task with all material related on the stock picking")
+    project_task_create = fields.Boolean(string="Create task", help="Mark if this sale order needs to create a task with all material related on the stock picking")
 
     @api.multi
     def action_confirm(self):
