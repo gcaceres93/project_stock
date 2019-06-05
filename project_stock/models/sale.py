@@ -129,7 +129,7 @@ class SaleOrder(models.Model):
             return sequence_id
 
     @api.multi
-    def _create_analytic_account(self):
+    def _create_analytic_account(self, prefix=None):
         sequence_obj = self.env['account.analytic.account']
         data = {
             'name' : self.name,
