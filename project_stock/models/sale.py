@@ -34,6 +34,8 @@ class SaleOrder(models.Model):
                         'sale_order_id' : rec.id
                     }
                     project_id = project_obj.create(data)
+                elif rec.project_type == 'add':
+                    project_id = rec.project_id 
             ######## PICKING AND PICKING TYPE PROCEDURE CREATION #######
                 if rec.project_stock:
                     picking_type_obj = self.env['stock.picking.type']
