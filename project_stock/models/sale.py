@@ -18,6 +18,8 @@ class SaleOrder(models.Model):
     def action_confirm(self):
         for rec in self:
             sale =super(SaleOrder, self).action_confirm()
+            for p in rec.picking_ids:
+                p.partner_id=rec.partner_id
             ######## PROJECT CREATION #######
             if rec.project:
                 if rec.project_type == 'new':
