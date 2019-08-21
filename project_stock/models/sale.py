@@ -72,8 +72,9 @@ class SaleOrder(models.Model):
                     picking_type_reserve_id = picking_type_obj.create(data1)
                     picking_type_project_id = picking_type_obj.create(data2)
 
-                    sale_picking_id = stock_picking_obj.search([('sale_id','=',rec.id)]) #search and update the sale picking
+                    sale_picking_id = stock_picking_obj.search([('sale_id','=',rec.id),('state','!=','cancel')]) #search and update the sale picking
                     picking_id= None
+                    
                     if len(sale_picking_id) > 1:
                         raise ValidationError(_('Cannot confirm a sale order with project/stock integration with more than one picking associated'))
                     else:
