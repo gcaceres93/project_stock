@@ -74,7 +74,7 @@ class SaleOrder(models.Model):
 
                     sale_picking_id = stock_picking_obj.search([('sale_id','=',rec.id),('state','!=','cancel')]) #search and update the sale picking
                     picking_id= None
-                    
+
                     if len(sale_picking_id) > 1:
                         raise ValidationError(_('Cannot confirm a sale order with project/stock integration with more than one picking associated'))
                     else:
@@ -94,7 +94,10 @@ class SaleOrder(models.Model):
                         if len(stock_move_line_ids) > 0 :
                             for stml in stock_move_line_ids:
                                 stml.location_dest_id = default_location_dest_id
+
                         picking_id.name = sequence_id._next()
+                        
+
                         if project_id:
                             picking_id.project_id = project_id
                             if rec.project_task_create:
@@ -115,21 +118,25 @@ class SaleOrder(models.Model):
                                             'quantity' : 0
                                         }
                                         task_id.material_stock_ids = (0,0, material_stock_data)
+
             return sale
 
     @api.multi
     def generate_reserve_operation_sequence(self):
         sequence_obj = self.env['ir.sequence']
-        data = {
-            'name' : _('Reserve ') + str(self.partner_id.name) + ' Sequence',
-            'prefix' : 'RES/'+str(self.partner_id.name)+'/',
-            'padding' : 4,
-            'code' : _('reserve.') + str(self.partner_id.name) + '.sequence',
-            'number_increment' : 1,
-            'active': True,
-            'implementation' : 'no_gap'
-        }
-        sequence_id = sequence_obj.create(data)
+        prefix = 'RES/'+str(self.partner_id.name)+'/'
+        sequence_id=sequence_obj.search([('prefix','=',prefix),('company_id','=',self.env.user.company_id.id)])
+        if not sequence_id:
+            data = {
+                'name' : _('Reserve ') + str(self.partner_id.name) + ' Sequence',
+                'prefix' : 'RES/'+str(self.partner_id.name)+'/',
+                'padding' : 4,
+                'code' : _('reserve.') + str(self.partner_id.name) + '.sequence',
+                'number_increment' : 1,
+                'active': True,
+                'implementation' : 'no_gap'
+            }
+            sequence_id = sequence_obj.create(data)
         if sequence_id:
             return sequence_id
 
