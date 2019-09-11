@@ -219,7 +219,7 @@ class ProjectTaskStock(models.Model):
     @api.multi
     def create_analytic_line(self):
         for line in self:
-            move_id = self.env['account.analytic.line'].create(
+            move_id = self.env['account.analytic.line'].sudo().create(
                 line._prepare_analytic_line())
-            move_id.amount = (line.product_id.with_context(uom=line.product_uom_id.id).price_get('standard_price')[line.product_id.id]  * line.quantity or 0.0) * -1
+            move_id.amount = (line.product_id.sudo().with_context(uom=line.product_uom_id.id).price_get('standard_price')[line.product_id.id]  * line.quantity or 0.0) * -1
             line.analytic_line_id = move_id.id
