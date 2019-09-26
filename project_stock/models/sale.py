@@ -110,7 +110,7 @@ class SaleOrder(models.Model):
                                     'project_id' : project_id.id
                                 }
                                 task_id = task_obj.create(task_data)
-                                for move in picking_id.move_ids_without_package:
+                                for move in picking_id.move_lines:
                                     if move.product_id:
                                         material_stock_data = {
                                             'task_id' : task_id.id,
