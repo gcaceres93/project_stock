@@ -15,6 +15,16 @@ class SaleOrder(models.Model):
     project_task_create = fields.Boolean(string="Create task", help="Mark if this sale order needs to create a task with all material related on the stock picking")
 
     @api.multi
+    def action_cancel(self):
+        for rec in self:
+            if rec.project_id:
+                if rec.project_id.analytic_account_id:
+                    rec.project_id.analytic_account_id.unlink()
+            sale =super(SaleOrder, self).action_cancel()
+            return sale
+
+
+    @api.multi
     def action_confirm(self):
         for rec in self:
             sale =super(SaleOrder, self).action_confirm()
