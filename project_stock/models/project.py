@@ -125,10 +125,9 @@ class Task(models.Model):
 
     @api.multi
     def unlink(self):
-        self.mapped('stock_move_ids').unlink()
+        self.unlink_stock_move()
         self.mapped('analytic_line_ids').unlink()
         return super(Task, self).unlink()
-
     @api.multi
     def action_assign(self):
         self.mapped('stock_move_ids')._action_assign()
