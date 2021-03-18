@@ -12,7 +12,7 @@ class SaleOrder(models.Model):
     project_type = fields.Selection([('new','Generate new project'),('add','Add to already created project')],default="new")
     project_id = fields.Many2one('project.project','Project')
     project_stock = fields.Boolean(string="Stock Integration",help="Mark if this sale order have integration with stock pickings and a relation with the execution of task material consume",default=True)
-    project_task_create = fields.Boolean(string="Create task", help="Mark if this sale order needs to create a task with all material related on the stock picking")
+    project_task_create = fields.Boolean(string="Create task", help="Mark if this sale order needs to create a task with all material related on the stock picking",default=True)
 
     @api.multi
     def action_cancel(self):
@@ -50,37 +50,44 @@ class SaleOrder(models.Model):
                     project_id = rec.project_id 
             ######## PICKING AND PICKING TYPE PROCEDURE CREATION #######
                 if rec.project_stock:
+
                     picking_type_obj = self.env['stock.picking.type']
                     stock_location_obj = self.env['stock.location']
                     stock_picking_obj = self.env['stock.picking']
                     sequence_id = self.generate_reserve_operation_sequence()
-                    default_location_src_id = picking_type_obj.search([('code','=','incoming'),('warehouse_id','=',rec.warehouse_id.id)])[0].default_location_dest_id
-                    default_location_dest_id = default_location_src_id.copy(default={'name': _('Reserve ') + str(rec.partner_id.name)+ ' ' +str(rec.name)}) #RESERVE LOCATION CREATION
-                    partner_location_id = default_location_src_id.copy(default={'name' : _('Project ') + str(rec.partner_id.name)+' ' + str(rec.name)}) #LOCATION FOR  CUSTOMER PROJECT
-                    partner_consume_location_id = default_location_src_id.copy(default={'name' : _('Consume ') + str(rec.partner_id.name) + ' ' + str(rec.name),'usage' : 'customer'}) #LOCATION FOR CUSTOMER PROJECT CONSUME
-                    project_id.location_src_id = partner_location_id
-                    project_id.location_dest_id = partner_consume_location_id
+                    if rec.project_type == 'new':
 
-                    data1 = { #DATA FOR CREATION OF PICKING TYPE RESERVE
-                        'name' : _('Reserve ') + str(rec.partner_id.name) + ' ' + str(rec.name),
-                        'code' : 'internal',
-                        'show_reserved' : True,
-                        'sequence_id' : sequence_id.id,
-                        'default_location_src_id' : default_location_src_id.id,
-                        'default_location_dest_id' : default_location_dest_id.id
-                    }
+                        default_location_src_id = picking_type_obj.search([('code','=','incoming'),('warehouse_id','=',rec.warehouse_id.id)])[0].default_location_dest_id
+                        default_location_dest_id = default_location_src_id.copy(default={'name': _('Reserve ') + str(rec.partner_id.name)+ ' ' +str(rec.name)}) #RESERVE LOCATION CREATION
+                        partner_location_id = default_location_src_id.copy(default={'name' : _('Project ') + str(rec.partner_id.name)+' ' + str(rec.name),'usage' : 'customer'}) #LOCATION FOR  CUSTOMER PROJECT
+                        partner_consume_location_id = default_location_src_id.copy(default={'name' : _('Consume ') + str(rec.partner_id.name) + ' ' + str(rec.name),'usage' : 'customer'}) #LOCATION FOR CUSTOMER PROJECT CONSUME
+                        project_id.location_src_id = partner_location_id
+                        project_id.location_dest_id = partner_consume_location_id
 
-                    data2 = {  # DATA FOR CREATION OF PICKING TYPE FOR CUSTOMER PROJECT
-                        'name': _('Project ') + str(rec.partner_id.name) + ' ' + str(rec.name),
-                        'code': 'internal',
-                        'show_reserved': True,
-                        'sequence_id': sequence_id.id,
-                        'default_location_src_id': default_location_dest_id.id,
-                        'default_location_dest_id': partner_location_id.id
-                    }
 
-                    picking_type_reserve_id = picking_type_obj.create(data1)
-                    picking_type_project_id = picking_type_obj.create(data2)
+                        data1 = { #DATA FOR CREATION OF PICKING TYPE RESERVE
+                            'name' : _('Reserve ') + str(rec.partner_id.name) + ' ' + str(rec.name),
+                            'code' : 'internal',
+                            'show_reserved' : True,
+                            'sequence_id' : sequence_id.id,
+                            'default_location_src_id' : default_location_src_id.id,
+                            'default_location_dest_id' : default_location_dest_id.id
+                        }
+
+                        data2 = {  # DATA FOR CREATION OF PICKING TYPE FOR CUSTOMER PROJECT
+                            'name': _('Project ') + str(rec.partner_id.name) + ' ' + str(rec.name),
+                            'code': 'outgoing',
+                            'show_reserved': True,
+                            'sequence_id': sequence_id.id,
+                            'default_location_src_id': default_location_dest_id.id,
+                            'default_location_dest_id': partner_location_id.id
+                        }
+
+                        picking_type_reserve_id = picking_type_obj.create(data1)
+                        picking_type_project_id = picking_type_obj.create(data2)
+
+
+
 
                     sale_picking_id = stock_picking_obj.search([('sale_id','=',rec.id),('state','!=','cancel')]) #search and update the sale picking
                     picking_id= None
@@ -93,17 +100,19 @@ class SaleOrder(models.Model):
                     if picking_id: #UPDATE THE SALE PICKING
                         picking_id.partner_id = None
                         picking_id.picking_type_id.sequence_id.number_next_actual =  picking_id.picking_type_id.sequence_id.number_next_actual - 1
-                        picking_id.picking_type_id = picking_type_reserve_id.id
-                        picking_id.location_dest_id = default_location_dest_id.id
+                        if rec.project_type == 'new':
+                            picking_id.picking_type_id = picking_type_reserve_id.id
+                            picking_id.location_dest_id = default_location_dest_id.id
                         picking_id.action_assign()
                         stock_move_line_ids = self.env['stock.move.line'].search([('picking_id','=',picking_id.id)])
                         stock_move_ids = self.env['stock.move'].search([('picking_id','=',picking_id.id)])
-                        if len(stock_move_ids) > 0:
-                            for sm in stock_move_ids:
-                                sm.location_dest_id = default_location_dest_id
-                        if len(stock_move_line_ids) > 0 :
-                            for stml in stock_move_line_ids:
-                                stml.location_dest_id = default_location_dest_id
+                        if rec.project_type == 'new':
+                            if len(stock_move_ids) > 0:
+                                for sm in stock_move_ids:
+                                    sm.location_dest_id = default_location_dest_id
+                            if len(stock_move_line_ids) > 0 :
+                                for stml in stock_move_line_ids:
+                                    stml.location_dest_id = default_location_dest_id
 
                         picking_id.name = sequence_id._next()
                         
@@ -114,18 +123,37 @@ class SaleOrder(models.Model):
                                 materials = list()
                                 task_obj = self.env['project.task']
                                 material_stock_obj = self.env['project.task.stock']
-                                task_data={
-                                    'name' : 'First project task',
-                                    'user_id' : rec.user_id.id,
-                                    'project_id' : project_id.id
-                                }
+                                if rec.project_type == 'new':
+                                    task_data={
+                                        'name' : 'First project task',
+                                        'user_id' : rec.user_id.id,
+                                        'project_id' : project_id.id
+                                    }
+                                else:
+                                    task_data = {
+                                        'name': 'Adicional ' + rec.name,
+                                        'so_adicional': rec.id,
+                                        'adicional': True,
+                                        'user_id': rec.user_id.id,
+                                        'project_id': project_id.id
+                                    }
                                 task_id = task_obj.create(task_data)
                                 for move in picking_id.move_ids_without_package:
                                     if move.product_id:
+                                        if rec.project_type == 'add':
+                                            so_adicional= rec.id
+                                            adicional = True
+                                        else:
+                                            so_adicional = None
+                                            adicional = None
+
                                         material_stock_data = {
                                             'task_id' : task_id.id,
                                             'product_id' : move.product_id.id,
-                                            'quantity' : 0
+                                            'quantity' : 0,
+                                            'adicional_pedido': move.product_uom_qty,
+                                            'so_adicional': so_adicional,
+                                            'adicional': adicional
                                         }
                                         task_id.material_stock_ids = (0,0, material_stock_data)
 

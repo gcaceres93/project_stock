@@ -19,6 +19,8 @@ class ProjectTaskType(models.Model):
 class Task(models.Model):
     _inherit = 'project.task'
 
+    adicional = fields.Boolean(sting="Tarea Adicional?")
+    so_adicional = fields.Many2one('sale.order', string="SO Adicional")
 
     @api.multi
     @api.depends('material_stock_ids.stock_move_id')
@@ -144,6 +146,9 @@ class ProjectTaskStock(models.Model):
 
     task_id = fields.Many2one('project.task','Task')
     product_id = fields.Many2one('product.product', 'Product')
+    adicional = fields.Boolean(sting="Tarea Adicional?")
+    so_adicional = fields.Many2one('sale.order', string="SO Adicional")
+    adicional_pedido = fields.Float(string="Cantidad Pedida")
     quantity = fields.Integer(string="Quantity")
     stock_move_id = fields.Many2one(
         comodel_name='stock.move',
