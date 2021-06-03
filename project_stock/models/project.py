@@ -207,9 +207,7 @@ class ProjectTaskStock(models.Model):
             'user_id': self._uid,
             'product_uom_id': self.product_uom_id.id,
         }
-        amount_unit = \
-            self.product_id.with_context(uom=self.product_uom_id.id).price_get(
-                'standard_price')[self.product_id.id]
+        amount_unit = self.product_id.standard_price
         amount = amount_unit * self.quantity or 0.0
         result = round(amount, company_id.currency_id.decimal_places) * -1
         res.update({'amount': result})
