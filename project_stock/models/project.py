@@ -84,7 +84,7 @@ class Task(models.Model):
         help='Default location to which materials are consumed.',
     )
 
-    material_stock_ids = fields.One2many('project.task.stock','task_id')
+    material_stock_ids = fields.One2many('project.task.stock','task_id',copy=True)
 
 
     def unlink_stock_move(self):
