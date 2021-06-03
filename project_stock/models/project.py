@@ -20,20 +20,17 @@ class Task(models.Model):
     _inherit = 'project.task'
 
 
-    @api.multi
     @api.depends('material_stock_ids.stock_move_id')
     def _compute_stock_move(self):
         for task in self:
             task.stock_move_ids = task.mapped('material_stock_ids.stock_move_id')
 
-    @api.multi
     @api.depends('material_stock_ids.analytic_line_id')
     def _compute_analytic_line(self):
         for task in self:
             task.analytic_line_ids = task.mapped(
                 'material_stock_ids.analytic_line_id')
 
-    @api.multi
     @api.depends('stock_move_ids.state')
     def _compute_stock_state(self):
         for task in self:
@@ -90,7 +87,6 @@ class Task(models.Model):
     material_stock_ids = fields.One2many('project.task.stock','task_id')
 
 
-    @api.multi
     def unlink_stock_move(self):
         res = False
         moves = self.mapped('stock_move_ids')
@@ -103,7 +99,6 @@ class Task(models.Model):
             res = moves.unlink()
         return res
 
-    @api.multi
     def write(self, vals):
         res = super(Task, self).write(vals)
         for task in self:
@@ -123,16 +118,14 @@ class Task(models.Model):
                     task.material_stock_ids.mapped('analytic_line_id').unlink()
         return res
 
-    @api.multi
     def unlink(self):
         self.unlink_stock_move()
         self.mapped('analytic_line_ids').unlink()
         return super(Task, self).unlink()
-    @api.multi
+
     def action_assign(self):
         self.mapped('stock_move_ids')._action_assign()
 
-    @api.multi
     def action_done(self):
         for move in self.mapped('stock_move_ids'):
             move.quantity_done = move.product_uom_qty
@@ -185,7 +178,6 @@ class ProjectTaskStock(models.Model):
         }
         return res
 
-    @api.multi
     def create_stock_move(self):
         for line in self:
             move_id = self.env['stock.move'].create(
@@ -213,7 +205,6 @@ class ProjectTaskStock(models.Model):
         res.update({'amount': result})
         return res
 
-    @api.multi
     def create_analytic_line(self):
         for line in self:
             move_id = self.env['account.analytic.line'].sudo().create(
