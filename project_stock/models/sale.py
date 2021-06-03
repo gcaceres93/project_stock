@@ -14,7 +14,6 @@ class SaleOrder(models.Model):
     project_stock = fields.Boolean(string="Stock Integration",help="Mark if this sale order have integration with stock pickings and a relation with the execution of task material consume",default=True)
     project_task_create = fields.Boolean(string="Create task", help="Mark if this sale order needs to create a task with all material related on the stock picking")
 
-    @api.multi
     def action_cancel(self):
         for rec in self:
             if rec.project_id:
@@ -24,7 +23,6 @@ class SaleOrder(models.Model):
             return sale
 
 
-    @api.multi
     def action_confirm(self):
         for rec in self:
             sale =super(SaleOrder, self).action_confirm()
@@ -127,11 +125,10 @@ class SaleOrder(models.Model):
                                             'product_id' : move.product_id.id,
                                             'quantity' : 0
                                         }
-                                        task_id.material_stock_ids = (0,0, material_stock_data)
+                                        task_id.material_stock_ids.create(material_stock_data)
 
             return sale
 
-    @api.multi
     def generate_reserve_operation_sequence(self):
         sequence_obj = self.env['ir.sequence']
         prefix = 'RES/'+str(self.partner_id.name)+'/'
@@ -150,7 +147,6 @@ class SaleOrder(models.Model):
         if sequence_id:
             return sequence_id
 
-    @api.multi
     def _create_analytic_account(self, prefix=None):
         sequence_obj = self.env['account.analytic.account']
         data = {
