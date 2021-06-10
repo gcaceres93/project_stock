@@ -64,6 +64,7 @@ class SaleOrder(models.Model):
                         'code' : 'internal',
                         'show_reserved' : True,
                         'sequence_id' : sequence_id.id,
+                        'sequence_code':rec.name,
                         'default_location_src_id' : default_location_src_id.id,
                         'default_location_dest_id' : default_location_dest_id.id
                     }
@@ -73,6 +74,7 @@ class SaleOrder(models.Model):
                         'code': 'internal',
                         'show_reserved': True,
                         'sequence_id': sequence_id.id,
+                        'sequence_code': rec.name,
                         'default_location_src_id': default_location_dest_id.id,
                         'default_location_dest_id': partner_location_id.id
                     }
