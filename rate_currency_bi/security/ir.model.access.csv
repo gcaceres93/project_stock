@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_rate_currency_bi_rate_currency_bi,rate_currency_bi.rate_currency_bi,model_rate_currency_bi_rate_currency_bi,base.group_user,1,1,1,1
