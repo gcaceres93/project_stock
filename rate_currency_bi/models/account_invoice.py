@@ -16,12 +16,12 @@ class account_invoice_bi(models.Model):
             # out_invoice = Factura de Cliente
             # in_refund = Nota de Credito emitida por Proveedor
             # out_refund = Nota de Credito enviada al cliente
-            if rec.invoice_id.type == 'out_invoice':
-                if rec.currency_id.id == 3:
-                    rec.diferencia_moneda = rec.price_subtotal
-                else:
-                    if rec.price_subtotal != 0:
-                        rec.diferencia_moneda = rec.price_subtotal / rec.currency_id.rate_bi
+            # if rec.invoice_id.type == 'out_invoice':
+            if rec.currency_id.id == 3:
+                rec.diferencia_moneda = rec.price_subtotal
+            else:
+                if rec.price_subtotal != 0:
+                    rec.diferencia_moneda = rec.price_subtotal / rec.currency_id.rate_bi
 
 
 
