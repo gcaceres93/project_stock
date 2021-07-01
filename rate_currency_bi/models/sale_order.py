@@ -14,8 +14,8 @@ class sale_order_bi(models.Model):
             if rec.currency_id.id == 3:
                 rec.diferencia_moneda = rec.amount_untaxed
             else:
-                if rec.amount_untaxed > 0:
-                    rec.diferencia_moneda = rec.currency_id.rate_bi / rec.amount_untaxed
+                if rec.amount_untaxed > 0 and rec.currency_id.rate_bi > 0:
+                    rec.diferencia_moneda = rec.amount_untaxed / rec.currency_id.rate_bi
 
 
 

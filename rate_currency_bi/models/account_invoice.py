@@ -20,7 +20,7 @@ class account_invoice_bi(models.Model):
             if rec.currency_id.id == 3:
                 rec.diferencia_moneda = rec.price_subtotal
             else:
-                if rec.price_subtotal != 0:
+                if rec.price_subtotal > 0 and rec.currency_id.rate_bi > 0:
                     rec.diferencia_moneda = rec.price_subtotal / rec.currency_id.rate_bi
 
 
