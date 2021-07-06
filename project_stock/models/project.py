@@ -6,7 +6,9 @@ from odoo.exceptions import ValidationError
 
 
 class Project(models.Model):
-    _inherit = 'project.project'
+    
+    _name = 'project.project'
+    _inherit = ['project.project', 'mail.thread', 'mail.activity.mixin']
 
     location_src_id = fields.Many2one('stock.location','Source Location')
     location_dest_id = fields.Many2one('stock.location','Destination location')
