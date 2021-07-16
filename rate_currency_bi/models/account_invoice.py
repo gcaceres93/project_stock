@@ -21,7 +21,7 @@ class account_invoice_bi(models.Model):
             if rec.currency_id == 3:
                 rec.diferencia_moneda = rec.price_subtotal
             else:
-                factura = self.env['account_invoice'].search([('id','=',rec.invoice_id)])
+                factura = self.env['account.invoice'].search([('id','=',rec.invoice_id.id)])
                 if factura.date_invoice:
                     moneda = self.env['res.currency.rate'].search([('currency_id', '=', 3),
                                                                      ('name', '=',factura.date_invoice )])
