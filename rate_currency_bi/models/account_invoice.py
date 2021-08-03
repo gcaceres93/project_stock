@@ -18,7 +18,7 @@ class account_invoice_bi(models.Model):
             # out_refund = Nota de Credito enviada al cliente
             # if rec.invoice_id.type == 'out_invoice':
             # moneda = rec.env['res.currency'].search([('id','=',3)])
-            if rec.currency_id == 3:
+            if rec.currency_id.id == 3:
                 rec.diferencia_moneda = rec.price_subtotal
             else:
                 factura = self.env['account.invoice'].search([('id','=',rec.invoice_id.id)])
