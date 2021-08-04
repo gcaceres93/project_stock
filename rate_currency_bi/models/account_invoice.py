@@ -19,13 +19,15 @@ class account_invoice_bi(models.Model):
             # if rec.invoice_id.type == 'out_invoice':
             # moneda = rec.env['res.currency'].search([('id','=',3)])
         if self.invoice_id.currency_id:
-            if self.invoice_id.currency_id.id == 3:
-                self.diferencia_moneda = self.price_subtotal
-            elif self.invoice_id.currency_id.id != 3:
-                factura = self.env['account.invoice'].search([('id','=',self.invoice_id.id)])
-                if factura.date_invoice:
-                    moneda = self.env['res.currency.rate'].search([('currency_id', '=', 3),
+            factura = self.env['account.invoice'].search([('id','=',self.invoice_id.id)])
+            if factura.date_invoice:
+                moneda = self.env['res.currency'].search([('id','=',self.invoice_id.currency_id.id)])
+                if moneda and moneda.id == 3:
+                    self.diferencia_moneda = self.price_subtotal
+                elif moneda and moneda.id !=3 and moneda.inverse_rate:
+                    tasa_moneda = self.env['res.currency.rate'].search([('currency_id', '=', 3),
                                                                          ('name', '=',factura.date_invoice)])
+                    self.diferencia_moneda = self.price_subtotal / tasa_moneda.inverse_rate
                         # if rec.currency_id.id == 3:
                         #     rec.diferencia_moneda = rec.price_subtotal
                         # else:
@@ -37,6 +39,8 @@ class account_invoice_bi(models.Model):
                         self.diferencia_moneda = self.price_subtotal
                 else:
                     self.diferencia_moneda = self.price_subtotal
+            else:
+                self.diferencia_moneda = self.price_subtotal
         else:
             self.diferencia_moneda = 0
 
