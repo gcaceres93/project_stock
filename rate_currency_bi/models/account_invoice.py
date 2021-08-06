@@ -9,8 +9,17 @@ _logger = logging.getLogger(__name__)
 class account_invoice_bi(models.Model):
     _inherit = 'account.invoice.line'
 
-    diferencia_moneda = fields.Monetary(store=True, readonly=True, compute='_compute_diferecia_moneda')
-
+    diferencia_moneda = fields.Monetary(compute='_compute_diferecia_moneda',store=True)
+    is_dolar = fields.Boolean(compute='compute_moneda_valor',store = True)
+    
+    @api.depends('currency_id')
+    def compute_moneda_valor(self):
+        for rec in self:
+            if rec.currency_id and rec.currency_id.id == 3:
+                rec.is_dolar = True
+            else:
+                rec.is_dolar = False
+    
     @api.depends('price_subtotal')
     def _compute_diferecia_moneda(self):
         _logger.info("#######_compute_diferecia_moneda######")
@@ -28,36 +37,38 @@ class account_invoice_bi(models.Model):
                     _logger.info("#######moneda######")
                     moneda = rec.env['res.currency'].search([('id','=',rec.invoice_id.currency_id.id)])
                     _logger.info(moneda)
-                    if moneda and moneda.id == 3:
-                        rec.diferencia_moneda = rec.price_subtotal
-                        _logger.info("#######if moneda.id######")
-                        _logger.info(moneda.id)
-                        #tasa_moneda = rec.env['res.currency.rate'].search([('currency_id', '=', 3),
-                         #                                                    ('name', '=',factura.date_invoice)])
+                    if moneda:
+                       if rec.is_dolar:
+                            rec.diferencia_moneda = rec.price_subtotal
+                            #_logger.info("#######if moneda.id######")
+                            #_logger.info(moneda.id)
+                            #tasa_moneda = rec.env['res.currency.rate'].search([('currency_id', '=', 3),
+                            #                                                    ('name', '=',factura.date_invoice)])
 
-                        #_logger.info("#######tasa_moneda######")
-                        #_logger.info(tasa_moneda)
-                        #if tasa_moneda and tasa_moneda.rate:
-                            #round_curr = rec.currency_id.roun
-                            #inverse_rate = round_curr(1/tasa_moneda.rate)
-                            #rec.diferencia_moneda = rec.price_subtotal / inverse_rate
-                        #else:
-                            #rec.diferencia_moneda = 0
-                    elif moneda and moneda.id !=3:
-                        #rec.diferencia_moneda = rec.price_subtotal
-                        _logger.info("#######elif moneda.id######")
-                        _logger.info(moneda.id)
-                        tasa_moneda = rec.env['res.currency.rate'].search([('currency_id', '=', 3),
+                            #_logger.info("#######tasa_moneda######")
+                            #_logger.info(tasa_moneda)
+                            #if tasa_moneda and tasa_moneda.rate:
+                                #round_curr = rec.currency_id.roun
+                                #inverse_rate = round_curr(1/tasa_moneda.rate)
+                                #rec.diferencia_moneda = rec.price_subtotal / inverse_rate
+                            #else:
+                                #rec.diferencia_moneda = 0
+                        else:
+                        #if moneda.id != 3:
+                            #rec.diferencia_moneda = rec.price_subtotal
+                            _logger.info("#######elif moneda.id######")
+                            _logger.info(moneda.id)
+                            tasa_moneda = rec.env['res.currency.rate'].search([('currency_id', '=', 3),
                                                                              ('name', '=',factura.date_invoice)])
 
-                        _logger.info("#######tasa_moneda######")
-                        _logger.info(tasa_moneda)
-                        if tasa_moneda and tasa_moneda.rate:
-                            round_curr = rec.currency_id.roun
-                            inverse_rate = round_curr(1/tasa_moneda.rate)
-                            rec.diferencia_moneda = rec.price_subtotal / inverse_rate
-                        else:
-                            rec.diferencia_moneda = 0
+                            _logger.info("#######tasa_moneda######")
+                            _logger.info(tasa_moneda)
+                            if tasa_moneda and tasa_moneda.rate:
+                                round_curr = rec.currency_id.roun
+                                inverse_rate = round_curr(1/tasa_moneda.rate)
+                                rec.diferencia_moneda = rec.price_subtotal / inverse_rate
+                            else:
+                                rec.diferencia_moneda = 0
                     else:
                         rec.diferencia_moneda = 0
                 else:
