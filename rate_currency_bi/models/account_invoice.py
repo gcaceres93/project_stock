@@ -38,7 +38,7 @@ class account_invoice_bi(models.Model):
                     moneda = rec.env['res.currency'].search([('id','=',rec.invoice_id.currency_id.id)])
                     _logger.info(moneda)
                     if moneda:
-                       if rec.is_dolar:
+                        if rec.is_dolar:
                             rec.diferencia_moneda = rec.price_subtotal
                             #_logger.info("#######if moneda.id######")
                             #_logger.info(moneda.id)
