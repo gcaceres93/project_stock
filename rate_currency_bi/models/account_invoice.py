@@ -29,11 +29,8 @@ class account_invoice_bi(models.Model):
                     moneda = rec.env['res.currency'].search([('id','=',rec.invoice_id.currency_id.id)])
                     _logger.info(moneda)
                     if moneda and moneda.id == 3:
-                        rec.diferencia_moneda = rec.price_subtotal
+                        #rec.diferencia_moneda = rec.price_subtotal
                         _logger.info("#######if moneda.id######")
-                        _logger.info(moneda.id)
-                    elif moneda and moneda.id !=3:
-                        _logger.info("#######elif moneda.id######")
                         _logger.info(moneda.id)
                         tasa_moneda = rec.env['res.currency.rate'].search([('currency_id', '=', 3),
                                                                              ('name', '=',factura.date_invoice)])
@@ -46,6 +43,21 @@ class account_invoice_bi(models.Model):
                             rec.diferencia_moneda = rec.price_subtotal / inverse_rate
                         else:
                             rec.diferencia_moneda = 0
+                    elif moneda and moneda.id !=3:
+                        rec.diferencia_moneda = rec.price_subtotal
+                        _logger.info("#######elif moneda.id######")
+                        _logger.info(moneda.id)
+                        #tasa_moneda = rec.env['res.currency.rate'].search([('currency_id', '=', 3),
+                         #                                                    ('name', '=',factura.date_invoice)])
+
+                        #_logger.info("#######tasa_moneda######")
+                        #_logger.info(tasa_moneda)
+                        #if tasa_moneda and tasa_moneda.rate:
+                         #   round_curr = rec.currency_id.roun
+                         #   inverse_rate = round_curr(1/tasa_moneda.rate)
+                         #   rec.diferencia_moneda = rec.price_subtotal / inverse_rate
+                        #else:
+                         #   rec.diferencia_moneda = 0
                     else:
                         rec.diferencia_moneda = 0
                 else:
