@@ -11,7 +11,8 @@ class account_invoice_bi(models.Model):
 
     diferencia_moneda = fields.Monetary(store=True, compute='_compute_diferecia_moneda')
 
-    @api.depends('price_subtotal')
+    @api.one
+    @api.depends('price_subtotal','quantity','invoice_line_tax_ids')
     def _compute_diferecia_moneda(self):
 #         _logger.info("#######_compute_diferecia_moneda######")
             #campo type o inv
@@ -29,12 +30,14 @@ class account_invoice_bi(models.Model):
                         rec.diferencia_moneda = rec.price_subtotal
                             
                     else:
-                        tasa_moneda = rec.env['res.currency.rate'].search([('currency_id', '=', 3),
+                        if rec.invoice_id.currency_rate:
+                            rec.diferencia_moneda = rec.price_subtotal / rec.invoice_id.currency_rate
+#                         tasa_moneda = rec.env['res.currency.rate'].search([('currency_id', '=', 3),
                                                                              ('name', '=',rec.invoice_id.date_invoice)])
 
-                        if tasa_moneda and tasa_moneda.rate:
-                             round_curr = rec.currency_id.round
-                             inverse_rate = round_curr(1/tasa_moneda.rate)
-                             rec.diferencia_moneda = rec.price_subtotal / inverse_rate
+#                         if tasa_moneda and tasa_moneda.rate:
+#                              round_curr = rec.currency_id.round
+#                              inverse_rate = round_curr(1/tasa_moneda.rate)
+#                              rec.diferencia_moneda = rec.price_subtotal / inverse_rate
                         
 
