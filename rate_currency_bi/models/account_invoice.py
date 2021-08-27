@@ -33,7 +33,7 @@ class account_invoice_bi(models.Model):
                         if rec.invoice_id.currency_rate:
                             rec.diferencia_moneda = rec.price_subtotal / rec.invoice_id.currency_rate
 #                         tasa_moneda = rec.env['res.currency.rate'].search([('currency_id', '=', 3),
-                                                                             ('name', '=',rec.invoice_id.date_invoice)])
+#                                                                              ('name', '=',rec.invoice_id.date_invoice)])
 
 #                         if tasa_moneda and tasa_moneda.rate:
 #                              round_curr = rec.currency_id.round
