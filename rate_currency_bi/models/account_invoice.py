@@ -7,7 +7,8 @@ class account_invoice_bi(models.Model):
     _inherit = 'account.invoice.line'
 
     diferencia_moneda = fields.Monetary(store=True, readonly=True, compute='_compute_diferecia_moneda')
-
+    
+    @api.one
     @api.depends('currency_id','price_subtotal')
     def _compute_diferecia_moneda(self):
         for rec in self:
@@ -19,9 +20,9 @@ class account_invoice_bi(models.Model):
             if rec.invoice_id.type == 'out_invoice':
                 if rec.currency_id.id == 3:
                     rec.diferencia_moneda = rec.price_subtotal
-                else:
-                    if rec.price_subtotal != 0:
-                        rec.diferencia_moneda = rec.price_subtotal / rec.currency_id.rate_bi
+               # else:
+                #    if rec.price_subtotal != 0:
+                 #       rec.diferencia_moneda = rec.price_subtotal / rec.currency_id.rate_bi
 
 
 
