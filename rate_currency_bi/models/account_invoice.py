@@ -24,9 +24,9 @@ class account_invoice_bi(models.Model):
             # moneda = rec.env['res.currency'].search([('id','=',3)])
         for rec in self:
             if rec.currency_id:
-                 _logger.info(rec.currency_id.id)
-                 _logger.info("#####if rec.currency_id:#####")
-                 _logger.info(rec.invoice_id.id)
+                _logger.info(rec.currency_id.id)
+                _logger.info("#####if rec.currency_id:#####")
+                _logger.info(rec.invoice_id.id)
                 if rec.invoice_id.date_invoice:
 
                     if rec.currency_id.id == 3:
