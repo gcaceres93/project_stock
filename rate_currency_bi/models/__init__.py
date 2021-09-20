@@ -2,4 +2,4 @@
 
 #from . import res_currency
 #from . import sale_order
-#from . import account_invoice
+from . import account_invoice
