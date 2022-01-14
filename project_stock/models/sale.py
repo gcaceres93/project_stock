@@ -31,19 +31,23 @@ class SaleOrder(models.Model):
             ######## PROJECT CREATION #######
             if rec.project:
                 if rec.project_type == 'new':
-                    analytic_account_id = self._create_analytic_account()
-                    project_obj = self.env['project.project']
-                    data = {
-                        'name' : rec.name,
-                        'label_tasks' : _('Tasks'),
-                        'user_id' :  self.env.user.id,
-                        'analytic_account_id' : analytic_account_id.id,
-                        'privacy_visibility' : 'portal',
-                        'partner_id' : rec.partner_id.id,
-                        'alias_contact' : 'everyone',
-                        'sale_order_id' : rec.id
-                    }
-                    project_id = project_obj.create(data)
+                    project_existing=self.env['project.project'].search([('sale_order_id','=',rec.id)])
+                    if project_existing:
+                        project_id=project_existing[0]
+                    else:
+                        analytic_account_id = self._create_analytic_account()
+                        project_obj = self.env['project.project']
+                        data = {
+                            'name' : rec.name,
+                            'label_tasks' : _('Tasks'),
+                            'user_id' :  self.env.user.id,
+                            'analytic_account_id' : analytic_account_id.id,
+                            'privacy_visibility' : 'portal',
+                            'partner_id' : rec.partner_id.id,
+                            'alias_contact' : 'everyone',
+                            'sale_order_id' : rec.id
+                        }
+                        project_id = project_obj.create(data)
                 elif rec.project_type == 'add':
                     project_id = rec.project_id 
             ######## PICKING AND PICKING TYPE PROCEDURE CREATION #######
