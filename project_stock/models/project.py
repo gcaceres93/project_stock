@@ -147,7 +147,7 @@ class ProjectTaskStock(models.Model):
         string='Analytic Line',
     )
     product_uom_id = fields.Many2one(
-        comodel_name='product.uom',
+        comodel_name='uom.uom',
         oldname="product_uom",
         string='Unit of Measure',
     )
