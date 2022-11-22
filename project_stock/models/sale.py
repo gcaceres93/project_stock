@@ -120,7 +120,7 @@ class SaleOrder(models.Model):
                                 material_stock_obj = self.env['project.task.stock']
                                 task_data={
                                     'name' : 'First project task',
-                                    'user_id' : rec.user_id.id,
+                                    'user_ids' : rec.user_id.id,
                                     'project_id' : project_id.id
                                 }
                                 task_id = task_obj.create(task_data)
