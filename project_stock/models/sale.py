@@ -35,20 +35,19 @@ class SaleOrder(models.Model):
                     if project_existing:
                         project_id=project_existing[0]
                     else:
-
+                        analytic_account_id = self._create_analytic_account()
+                        rec.analytic_account_id = analytic_account_id.id
                         project_obj = self.env['project.project']
                         data = {
                             'name' : rec.name,
                             'label_tasks' : _('Tasks'),
                             'user_id' :  self.env.user.id,
+                            'analytic_account_id' : analytic_account_id.id,
                             'privacy_visibility' : 'portal',
                             'partner_id' : rec.partner_id.id,
                             'alias_contact' : 'everyone',
                             'sale_order_id' : rec.id
                         }
-                        if not self.analytic_account_id:
-                            analytic_account_id = self._create_analytic_account()
-                            data['analytic_account_id'] = self.analytic_account_id.id
                         project_id = project_obj.create(data)
                 elif rec.project_type == 'add':
                     project_id = rec.project_id 
@@ -122,7 +121,7 @@ class SaleOrder(models.Model):
                                 material_stock_obj = self.env['project.task.stock']
                                 task_data={
                                     'name' : 'First project task',
-                                    'user_ids' : [(0,0,rec.user_id.id)],
+                                    'user_ids' : [(4,rec.user_id.id)],
                                     'project_id' : project_id.id
                                 }
                                 task_id = task_obj.create(task_data)
