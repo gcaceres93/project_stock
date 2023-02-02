@@ -48,6 +48,7 @@ class SaleOrder(models.Model):
                         }
                         if not self.analytic_account_id:
                             analytic_account_id = self._create_analytic_account()
+                            rec.analytic_account_id = analytic_account_id
                             data['analytic_account_id'] = analytic_account_id.id
                         project_id = project_obj.create(data)
 
